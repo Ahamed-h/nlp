@@ -10,7 +10,7 @@ const Header = () => {
         <div className="flex flex-col items-center justify-center space-y-2">
           <div className="flex items-center gap-2">
             <h1 className="text-3xl md:text-4xl font-bold text-nlp-blue">
-              Automated Text Summarizer
+              textrizer
             </h1>
             <TooltipProvider>
               <Tooltip>
