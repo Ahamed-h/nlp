@@ -10,7 +10,7 @@ const Footer = () => {
             Powered by Natural Language Processing and Machine Learning
           </p>
           <p className="text-sm text-muted-foreground text-center">
-            Created by Ahamed H, Aashif | {new Date().getFullYear()}
+            Created by Ahamed H, Aashif , Hafeez | {new Date().getFullYear()}
           </p>
         </div>
       </div>
