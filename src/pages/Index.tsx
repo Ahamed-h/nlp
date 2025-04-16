@@ -1,19 +1,14 @@
 
 import React, { useState } from 'react';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import TextInput from '@/components/TextInput';
-import Summary from '@/components/Summary';
+import { Card, CardContent } from '@/components/ui/card';
+import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { summarizeText, SummarizerResult } from '@/utils/summarizer';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 const Index = () => {
   const [text, setText] = useState('');
-  const [summaryType, setSummaryType] = useState<'extractive' | 'abstractive' | 'both'>('both');
-  const [result, setResult] = useState<SummarizerResult | null>(null);
+  const [result, setResult] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [showSummary, setShowSummary] = useState(false);
 
   const handleSummarize = () => {
     if (text.trim().length < 50) return;
@@ -23,9 +18,8 @@ const Index = () => {
     // Use setTimeout to simulate processing time and avoid blocking the UI
     setTimeout(() => {
       try {
-        const summaryResult = summarizeText(text, summaryType);
-        setResult(summaryResult);
-        setShowSummary(true);
+        const summaryResult = summarizeText(text, 'extractive');
+        setResult(summaryResult.extractiveSummary);
       } catch (error) {
         console.error('Error generating summary:', error);
       } finally {
@@ -35,60 +29,40 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <div className="min-h-screen flex flex-col items-center p-8">
+      <h1 className="text-3xl font-bold text-center mb-6">Text Summarizer</h1>
       
-      <main className="flex-1 py-8">
-        <div className="container max-w-5xl">
-          <div className="space-y-4 mb-8">
-            <h2 className="text-2xl font-bold">How it works</h2>
-            <Card className="p-4">
-              <Tabs defaultValue="extractive">
-                <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="extractive">Extractive Summarization</TabsTrigger>
-                  <TabsTrigger value="abstractive">Abstractive Summarization</TabsTrigger>
-                </TabsList>
-                <TabsContent value="extractive" className="p-4">
-                  <p className="text-muted-foreground">
-                    <strong>Extractive summarization</strong> identifies and extracts key sentences from the original text 
-                    to form a summary. It works by ranking sentences based on importance (using algorithms like TextRank) 
-                    and selecting the highest-scoring ones. This method preserves the original wording but may lack flow.
-                  </p>
-                </TabsContent>
-                <TabsContent value="abstractive" className="p-4">
-                  <p className="text-muted-foreground">
-                    <strong>Abstractive summarization</strong> generates new sentences that capture the essence of the original text. 
-                    It creates a paraphrased version that may use different words while preserving the core meaning. This approach 
-                    produces more natural-sounding summaries but requires deeper language understanding.
-                  </p>
-                </TabsContent>
-              </Tabs>
-            </Card>
-          </div>
-          
-          <TextInput 
-            text={text}
-            onTextChange={setText}
-            onSummarize={handleSummarize}
-            summaryType={summaryType}
-            onSummaryTypeChange={setSummaryType}
-            isLoading={isLoading}
+      <Card className="w-full max-w-3xl">
+        <CardContent className="p-6 space-y-4">
+          <Textarea 
+            value={text} 
+            onChange={(e) => setText(e.target.value)}
+            placeholder="Enter or paste your text here to summarize (minimum 50 characters)..."
+            className="min-h-[200px] resize-y font-mono"
           />
           
+          <Button 
+            onClick={handleSummarize} 
+            disabled={text.trim().length < 50 || isLoading}
+            className="w-full"
+          >
+            {isLoading ? 'Summarizing...' : 'Summarize Text'}
+          </Button>
+          
           {result && (
-            <Summary 
-              originalText={text}
-              extractiveSummary={result.extractiveSummary}
-              abstractiveSummary={result.abstractiveSummary}
-              summaryType={summaryType}
-              processingTime={result.processingTime}
-              visible={showSummary}
-            />
+            <div className="mt-4">
+              <h2 className="text-xl font-semibold mb-2">Summary:</h2>
+              <div className="bg-muted/50 p-4 rounded-md">
+                <p className="whitespace-pre-wrap">{result}</p>
+              </div>
+            </div>
           )}
-        </div>
-      </main>
+        </CardContent>
+      </Card>
       
-      <Footer />
+      <div className="mt-6 text-center text-sm text-muted-foreground">
+        Created by Ahamed H, Aashif | {new Date().getFullYear()}
+      </div>
     </div>
   );
 };
